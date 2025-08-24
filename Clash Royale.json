@@ -1,0 +1,609 @@
+{
+  "name": "Clash Royale",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 11
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -816,
+        224
+      ],
+      "id": "773cd2b8-d9e3-4210-9035-49fd2f625af9",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://api.clashroyale.com/v1/clans/%23LQL29LPU/members\n",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Authorization\": \"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6ImMxNDhkYTIyLWM5YzYtNDdiZi04NjgyLTE2ZjgzNTFhOGI3OCIsImlhdCI6MTc0OTA1NTU1Niwic3ViIjoiZGV2ZWxvcGVyLzgxOWRkNTM3LTA4MzMtNTFjYi1mZWY4LTZmNWFmMmZmYjJhNiIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyIxLjEuMS4xIl0sInR5cGUiOiJjbGllbnQifV19.jNQO9RknA2_u6rX8-iCF3KSKAMOB02TiUEbB0I5Qs7hMOcu4MPGbZyeoXPGgjNmoxAkGsuL5e_6ojhzV-mTifQ\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -656,
+        304
+      ],
+      "id": "4f0b76d2-f3be-441a-be1d-3e93daef1e31",
+      "name": "Get clan members"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "members",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        320
+      ],
+      "id": "125fc965-030f-49c9-b976-8e5058afe8a5",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"members\": {{$json[\"items\"]}}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -544,
+        160
+      ],
+      "id": "83c1f773-b436-4507-b355-d8e9b198c844",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.lastSeen }}\n",
+                    "rightValue": "2025-06-04T23:17:57",
+                    "operator": {
+                      "type": "dateTime",
+                      "operation": "before"
+                    },
+                    "id": "73430d3c-93f0-4403-9f54-54fe78ce5aee"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -304,
+        192
+      ],
+      "id": "38d93be9-ebc5-40b2-878b-bf128a42f983",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "url": "= https://api.clashroyale.com/v1/players/{{$json[\"tag\"].replace('#', '%23')}}/battlelog",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Authorization\": \"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6ImQ3NzZjZGIyLTQzNzktNDI5OS04MmZlLTY5NDgyY2JmZTNkOCIsImlhdCI6MTc0OTA1NTY1OSwic3ViIjoiZGV2ZWxvcGVyLzgxOWRkNTM3LTA4MzMtNTFjYi1mZWY4LTZmNWFmMmZmYjJhNiIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyIxODMuODMuMTQ4LjEyOCJdLCJ0eXBlIjoiY2xpZW50In1dfQ.ivvVCt_-UhBKR02xGXoK2UoqCPuBGoSZNtHD36JCZQCwMpQvDsL4vTq4W0sYEdGzS_LXHlqNAia54j5qwvZUpw\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -144,
+        240
+      ],
+      "id": "6ab248f8-6b1a-431c-9a09-ac656bfa9575",
+      "name": "fetch battle logs"
+    },
+    {
+      "parameters": {
+        "jsCode": "const todayDate = new Date().toISOString().split(\"T\")[0];\nconst playerMap = {};\n\n// Step 1: Group battles by player tag\nfor (const item of items) {\n  const battle = item.json;\n  const tag = battle?.team?.[0]?.tag;\n  const name = battle?.team?.[0]?.name;\n  const rawTime = battle?.battleTime;\n\n  if (!tag || !rawTime) continue;\n\n  if (!playerMap[tag]) {\n    playerMap[tag] = {\n      tag,\n      name,\n      battles: [],\n    };\n  }\n\n  playerMap[tag].battles.push(battle);\n}\n\n// Step 2: Check if each player played war today\nconst results = [];\n\nfor (const player of Object.values(playerMap)) {\n  let playedWarToday = false;\n\n  for (const b of player.battles) {\n    const rawTime = b.battleTime;\n\n    if (rawTime && rawTime.includes(\"T\")) {\n      const datePart = rawTime.slice(0, 8);\n      const timePart = rawTime.slice(9, 15);\n      const formatted = `${datePart.slice(0, 4)}-${datePart.slice(4, 6)}-${datePart.slice(6, 8)}T${timePart.slice(0, 2)}:${timePart.slice(2, 4)}:${timePart.slice(4, 6)}.000Z`;\n\n      const dateOnly = new Date(formatted).toISOString().split(\"T\")[0];\n\n      if (b.type === \"clanWar\" && dateOnly === todayDate) {\n        playedWarToday = true;\n        break;\n      }\n    }\n  }\n\n  results.push({\n    json: {\n      tag: player.tag,\n      name: player.name,\n      playedWarToday: playedWarToday\n    }\n  });\n}\n\nreturn results;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        64,
+        -48
+      ],
+      "id": "b9cc1e9f-8395-4dfe-92b1-8b8fe0f4da49",
+      "name": "clan war yes or no"
+    },
+    {
+      "parameters": {
+        "jsCode": "const players = {};\n\n// Group battles by player tag\nfor (const item of items) {\n  const battle = item.json;\n\n  if (!battle?.team?.[0]?.tag || !battle?.battleTime) continue;\n\n  const tag = battle.team[0].tag;\n\n  if (!players[tag]) {\n    players[tag] = {\n      tag,\n      name: battle.team[0]?.name || 'Unknown',\n      battles: []\n    };\n  }\n\n  players[tag].battles.push(battle);\n}\n\n// Process each player to keep only the last 3 battles and calculate wins\nconst processed = Object.values(players).map(player => {\n  // Sort battles by most recent\n  player.battles.sort((a, b) => new Date(b.battleTime) - new Date(a.battleTime));\n\n  // Get last 3\n  const last3Battles = player.battles.slice(0, 3).map(battle => {\n    const crowns = battle.team?.[0]?.crowns ?? 0;\n    const opponentCrowns = battle.opponent?.[0]?.crowns ?? 0;\n    const result = crowns > opponentCrowns ? \"win\" : crowns < opponentCrowns ? \"loss\" : \"draw\";\n\n    return {\n      battleTime: battle.battleTime,\n      crowns,\n      result\n    };\n  });\n\n  // Count wins\n  const wins = last3Battles.filter(b => b.result === \"win\").length;\n\n  return {\n    tag: player.tag,\n    name: player.name,\n    last3Battles,\n    wins\n  };\n});\n\n// Sort players by win count (descending) and take top 3\nconst top3 = processed\n  .sort((a, b) => b.wins - a.wins)\n  .slice(0, 3)\n  .map(player => ({\n    json: {\n      tag: player.tag,\n      name: player.name,\n      last3Battles: player.last3Battles,\n      wins: player.wins\n    }\n  }));\n\nreturn top3;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        64,
+        240
+      ],
+      "id": "879ebfdb-9523-4811-9611-7d03febfb8f2",
+      "name": "Battle result",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        560,
+        0
+      ],
+      "id": "134904e1-f93f-4448-adcd-f51f1f675d79",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "OqhPqtlGTNXbnkk5",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        544,
+        752
+      ],
+      "id": "f8c44610-9bc1-40eb-ac5e-f4d86cc324a7",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "OqhPqtlGTNXbnkk5",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        528,
+        384
+      ],
+      "id": "d74ad552-1ebb-413c-a09b-26c15db97a4d",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "OqhPqtlGTNXbnkk5",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const players = {};\nconst now = new Date();\nconst daysThreshold = 3;\n\n// Function to convert CR battleTime to valid ISO timestamp\nfunction fixTime(raw) {\n  const datePart = raw.slice(0, 8);\n  const timePart = raw.slice(9, 15);\n  return `${datePart.slice(0, 4)}-${datePart.slice(4, 6)}-${datePart.slice(6, 8)}T${timePart.slice(0, 2)}:${timePart.slice(2, 4)}:${timePart.slice(4, 6)}.000Z`;\n}\n\n// Group battles by player\nfor (const item of items) {\n  const battle = item.json;\n\n  if (!battle?.team?.[0]?.tag || !battle?.battleTime) continue;\n\n  const tag = battle.team[0].tag;\n  const name = battle.team[0].name;\n\n  if (!players[tag]) {\n    players[tag] = {\n      tag,\n      name,\n      battles: []\n    };\n  }\n\n  players[tag].battles.push(battle);\n}\n\nconst result = [];\n\nfor (const player of Object.values(players)) {\n  // Sort battles by most recent first\n  player.battles.sort((a, b) => new Date(fixTime(b.battleTime)) - new Date(fixTime(a.battleTime)));\n\n  if (player.battles.length > 0) {\n    const lastBattleTime = fixTime(player.battles[0].battleTime);\n    const lastBattleDate = new Date(lastBattleTime);\n    const diffInDays = (now - lastBattleDate) / (1000 * 60 * 60 * 24);\n\n    if (diffInDays > daysThreshold) {\n      result.push({\n        json: {\n          tag: player.tag,\n          name: player.name,\n          lastPlayed: lastBattleTime\n        }\n      });\n    }\n  }\n}\n\nreturn result;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        64,
+        464
+      ],
+      "id": "6830faaf-a3d5-47c7-8291-f0109235644d",
+      "name": "Inactive players"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Step 1: Extract player names who didn't participate\nconst warSkippers = items.map((item, index) => {\n  const name = item.json.name || `Unknown ${index + 1}`;\n  return `${index + 1}. ${name}`;\n});\n\n// Step 2: Join into a single formatted list\nconst formattedList = warSkippers.join('\\n');\n\n// Step 3: Output a single item with this combined list\nreturn [\n  {\n    json: {\n      skippersList: formattedList\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        288,
+        -48
+      ],
+      "id": "524bac59-34fd-451f-9f2a-088b0733f778",
+      "name": "Format Clan War Skippers"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Using the player data below, write a short, clean, single-paragraph summary for the clan leader. For each of the top 3 players, include their name, number of wins and losses from their last 3 battles. End the paragraph with a star rating out of 10 (based on overall team performance) and a short motivational line for the whole clan.\n\nPlayer Data:  \n{{ JSON.stringify($json.players) }}\n\nMention clan leader name as \"clan leader\".\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        528,
+        224
+      ],
+      "id": "8db711f1-bb6d-4f2d-bc2b-ada3068afb1c",
+      "name": "Ranking agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Using the list of players below who have not participated in today's Clan War, write a kind and respectful message addressed to the clan leader.\n\nFormat the list like this:\n1. player1  \n2. player2  \n3. player3  \n...\n\nAfter listing the names, write two friendly and supportive lines encouraging a reminder or motivation for them to join the next war. Mention clan leader name as \"clan leader\".Do not ask any questions. The tone should be warm and appreciative.\n\nList of players:\n{{ $json.skippersList }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        528,
+        -176
+      ],
+      "id": "b250fe04-21f1-41f6-961b-ce691cb36f6f",
+      "name": "clan war agent"
+    },
+    {
+      "parameters": {
+        "chatId": "7631221675",
+        "text": "={{$json.message}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1328,
+        208
+      ],
+      "id": "d40d8723-fe8e-400d-ba58-683ad07dd0a9",
+      "name": "Telegram",
+      "webhookId": "411ee202-15b3-4a70-84f0-9fbc5fae8a2a",
+      "alwaysOutputData": false,
+      "credentials": {
+        "telegramApi": {
+          "id": "DyOKUcDFuKXstXiF",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input: 3 items (each with a single top player)\n// Output: 1 item with a JSON object that includes the array of top players\n\nconst top3Combined = items.map(item => item.json);\n\nreturn [\n  {\n    json: {\n      players: top3Combined\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        288,
+        240
+      ],
+      "id": "40a64656-6bde-4967-96a4-031eca8a1e10",
+      "name": "Format battle result"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      inactivePlayers: items.map(item => item.json)\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        288,
+        464
+      ],
+      "id": "ccf03409-f946-4ad4-8463-303271aa77b5",
+      "name": "Format inactive players"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get outputs using actual node names from your workflow\nconst appreciation = $items(\"clan war agent\")[0].json.output;\nconst inactivityReport = $items(\"Ranking agent\")[0].json.output;\nconst coachingTips = $items(\"Inactive agent\")[0].json.output;\n\nconst finalMessage = `📢 Clan Weekly Report 📢\n\n🏅 Top Performer Highlights:\n${appreciation}\n\n⛔ Inactivity Alert:\n${inactivityReport}\n\n🎯 Coaching Tips:\n${coachingTips}\n\nLet's stay active and keep improving! 💪🔥`;\n\nreturn [{ json: { message: finalMessage } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        208
+      ],
+      "id": "7762801b-acf9-4384-8137-224c95763626",
+      "name": "Connector"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=The following Clash Royale players have been inactive for more than 3 days:\n\n{{ $json.inactivePlayers.map(p => `• ${p.name} (${p.tag}) — Last played on ${new Date(p.lastPlayed).toDateString()}`).join('\\n') }}\n\nMention clan leader as \"clan leader\".Please generate a polite and professional message for the clan leader, mentioning these players and recommending what action could be taken. Keep the tone constructive.\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        544,
+        592
+      ],
+      "id": "e4c2e394-637d-4688-b1de-56685ff86c7d",
+      "name": "Inactive agent"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {
+          "includeUnpaired": true
+        }
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        944,
+        208
+      ],
+      "id": "d5dafae3-f0b5-47f8-bd1b-620dbc3cdb12",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get clan members",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get clan members": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "fetch battle logs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fetch battle logs": {
+      "main": [
+        [
+          {
+            "node": "Battle result",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "clan war yes or no",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Inactive players",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clan war yes or no": {
+      "main": [
+        [
+          {
+            "node": "Format Clan War Skippers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Battle result": {
+      "main": [
+        [
+          {
+            "node": "Format battle result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "clan war agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Inactive agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Ranking agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inactive players": {
+      "main": [
+        [
+          {
+            "node": "Format inactive players",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Clan War Skippers": {
+      "main": [
+        [
+          {
+            "node": "clan war agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ranking agent": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "clan war agent": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format battle result": {
+      "main": [
+        [
+          {
+            "node": "Ranking agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format inactive players": {
+      "main": [
+        [
+          {
+            "node": "Inactive agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Connector": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inactive agent": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Connector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "110e028a-e29e-4369-bcab-41b9f5068470",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a0012f0c3356cc022a7bbe36a3b56e5705a653ec36c7ef9064fb74eb90265272"
+  },
+  "id": "cFiU10p0HODWRoVX",
+  "tags": []
+}
