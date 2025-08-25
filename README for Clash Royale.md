@@ -5,6 +5,10 @@ This **n8n workflow** automates the process of **monitoring a Clash Royale clan*
 
 ---
 
+Demo video link - https://drive.google.com/file/d/1gO0eIIhsXStQ5AK_cvCxHjRxzMH1eJ9h/view?usp=sharing
+
+---
+
 ## ✅ Features
 - **Automated Daily Trigger** – Runs at a scheduled time every day.
 - **Clash Royale API Integration** – Fetches clan member data and battle logs.
