@@ -97,14 +97,3 @@ Schedule → Get Members → Battle Logs → Analysis → AI Summaries → Merge
 🎯 Coaching Tips:
 Let's stay active and keep improving! 💪🔥
 ```
-
----
-
-## 🔒 Security Notes
-- Do NOT commit your **Clash Royale API token** or **Telegram token** to public repositories.
-- Use **n8n credential manager** to store sensitive data.
-
----
-
-## 📜 License
-This project is licensed under the **MIT License**.
